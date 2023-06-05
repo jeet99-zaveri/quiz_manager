@@ -1,0 +1,28 @@
+import { Injectable } from '@nestjs/common';
+import { QuestionRepository } from '../repositories/question.repository';
+import { CreateQuestionDto } from '../dto/create.question.dto';
+import { Question } from '../entities/question.entity';
+import { Quiz } from '../entities/quiz.entity';
+
+@Injectable()
+export class QuestionService {
+  constructor(private readonly questionRepository: QuestionRepository) {}
+
+  getAllQuiz() {
+    return [1, 2, 3, 4, 'From the service'];
+  }
+
+  async createNewQuestion(
+    question: CreateQuestionDto,
+    quiz: Quiz,
+  ): Promise<Question> {
+    const newQuestion = await this.questionRepository.save({
+      question: question.question,
+    });
+
+    quiz.questions.unshift(newQuestion);
+    await quiz.save();
+
+    return newQuestion;
+  }
+}
