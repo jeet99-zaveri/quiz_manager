@@ -8,8 +8,11 @@ import { Quiz } from '../entities/quiz.entity';
 export class QuestionService {
   constructor(private readonly questionRepository: QuestionRepository) {}
 
-  getAllQuiz() {
-    return [1, 2, 3, 4, 'From the service'];
+  async getQuestionById(id: number): Promise<Question> {
+    return await this.questionRepository.findOne({
+      where: { id },
+      relations: ['quiz', 'options'],
+    });
   }
 
   async createNewQuestion(

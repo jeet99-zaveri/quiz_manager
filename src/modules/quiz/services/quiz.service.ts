@@ -7,14 +7,18 @@ import { Quiz } from '../entities/quiz.entity';
 export class QuizService {
   constructor(private readonly quizRepository: QuizRepository) {}
 
-  getAllQuiz() {
-    return [1, 2, 3, 4, 'From the service'];
+  async getAllQuiz(): Promise<Quiz[]> {
+    return await this.quizRepository
+      .createQueryBuilder('q')
+      .leftJoinAndSelect('q.questions', 'qt')
+      .leftJoinAndSelect('qt.options', 'o')
+      .getMany();
   }
 
   async getQuizById(id: number): Promise<Quiz> {
     return await this.quizRepository.findOne({
       where: { id },
-      relations: ['questions'],
+      relations: ['questions', 'questions.options'],
     });
   }
 
