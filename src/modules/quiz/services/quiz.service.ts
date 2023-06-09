@@ -7,10 +7,18 @@ import {
   Pagination,
   paginate,
 } from 'nestjs-typeorm-paginate';
+import { OnEvent } from '@nestjs/event-emitter';
+import { events } from 'src/common/constants/events.constant';
+import { ResponseAddEvent } from '../events/response.add.event';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Injectable()
 export class QuizService {
-  constructor(private readonly quizRepository: QuizRepository) {}
+  constructor(
+    private readonly quizRepository: QuizRepository,
+    @InjectQueue('quiz') private quizQueue: Queue,
+  ) {}
 
   async getAllQuiz(): Promise<Quiz[]> {
     return await this.quizRepository
@@ -35,6 +43,16 @@ export class QuizService {
   }
 
   async createNewQuiz(quiz: CreateQuizDto): Promise<Quiz> {
-    return await this.quizRepository.save(quiz);
+    const quizData = await this.quizRepository.save(quiz);
+    await this.quizQueue.add({
+      job: '1',
+      description: 'Job Added Successfully.',
+    });
+    return quizData;
+  }
+
+  @OnEvent(events.RESPONSE_SUBMITTED)
+  checkQuizCompleted(payload: ResponseAddEvent) {
+    console.log('IN QUIZ SERVICE :::::::::::::::::::::::::: ', payload);
   }
 }
