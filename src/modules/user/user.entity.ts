@@ -9,6 +9,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { UserRoles } from './enums/user.enum';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
@@ -36,13 +37,16 @@ export class User extends BaseEntity {
   @Column()
   password: string;
 
+  @Column({ type: 'enum', enum: UserRoles, default: UserRoles.MEMBER })
+  role: UserRoles;
+
   @ApiProperty({ description: 'When user was created.' })
   @CreateDateColumn()
   createdAt: Date;
 
   @ApiProperty({ description: 'When user was updated.' })
   @UpdateDateColumn()
-  updateAt: Date;
+  updatedAt: Date;
 
   @BeforeInsert()
   async setPassword(password: string) {

@@ -12,10 +12,11 @@ import { Option } from './entities/option.entity';
 import { OptionService } from './services/option.service';
 import { OptionController } from './controllers/option.controller';
 import { OptionRepository } from './repositories/option.repository';
+import { UserModule } from '../user/user.module';
 
 @Module({
   controllers: [QuizController, QuestionController, OptionController],
-  imports: [TypeOrmModule.forFeature([Quiz, Question, Option])],
+  imports: [TypeOrmModule.forFeature([Quiz, Question, Option]), UserModule],
   providers: [
     QuizService,
     QuizRepository,

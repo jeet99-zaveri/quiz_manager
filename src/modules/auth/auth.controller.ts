@@ -2,7 +2,9 @@ import { Controller, Post, UseGuards, Request, Get } from '@nestjs/common';
 import { LocalAuthGuard } from './local.auth.guard';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt.auth.guard';
+import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -13,6 +15,7 @@ export class AuthController {
     return this.authService.generateToken(req.user);
   }
 
+  @ApiSecurity('bearer')
   @UseGuards(JwtAuthGuard)
   @Get('user')
   async user(@Request() req): Promise<any> {
